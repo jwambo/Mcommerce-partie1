@@ -122,6 +122,14 @@ public class ProductController {
 
         return produitsFiltres;
     }
+    
+    
+    @ApiOperation(value = "Retoune la liste des produits triée dansl'ordre alphabétique..")
+    @GetMapping(value = "TriProduits")
+    public List<Product> trierProduitsParOrdreAlphabetique(){
+
+        return productDao.findAllByOrderByNom();
+    }
 
 
 
