@@ -16,10 +16,11 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
 
 
-@Api( description="API pour es opérations CRUD sur les produits.")
+@Api("API pour es opérations CRUD sur les produits.")
 
 @RestController
 public class ProductController {
@@ -101,6 +102,25 @@ public class ProductController {
     public List<Product>  testeDeRequetes(@PathVariable int prix) {
 
         return productDao.chercherUnProduitCher(400);
+    }
+    
+    
+    @ApiOperation(value = "Retoune la liste des produits et leur marge.")
+    @GetMapping(value = "AdminProduits")
+    public MappingJacksonValue calculerMargeProduit() {
+
+    	Iterable<Product> produits = productDao.findAll();
+        HashMap<Product, Integer> marges = new HashMap<>();
+        for(Product product : produits) {
+        	marges.put(product, product.getPrix() - product.getPrixAchat());        	
+        }
+        
+        SimpleBeanPropertyFilter monFiltre = SimpleBeanPropertyFilter.serializeAllExcept("prixAchat");
+        FilterProvider listDeNosFiltres = new SimpleFilterProvider().addFilter("monFiltreDynamique", monFiltre);
+        MappingJacksonValue produitsFiltres = new MappingJacksonValue(marges);
+        produitsFiltres.setFilters(listDeNosFiltres);
+
+        return produitsFiltres;
     }
 
 
